@@ -12,7 +12,7 @@
 #include "CustomMatrix.h"
 
 using namespace std;
-using Array3x3 = std::array<std::array<bool, 3>, 3>;
+using Array3x3 = std::array<std::array<bool, 5>, 5>;
 
 
 class DrawingCanvas : public QWidget

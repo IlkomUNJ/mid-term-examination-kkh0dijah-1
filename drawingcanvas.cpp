@@ -1,4 +1,6 @@
 #include "drawingcanvas.h"
+#include <QDebug>
+#include <iostream>
 
 DrawingCanvas::DrawingCanvas(QWidget *parent)  {
     // Set a minimum size for the canvas
@@ -22,35 +24,57 @@ void DrawingCanvas::paintLines(){
     update();
 }
 
-void DrawingCanvas::segmentDetection(){
-    QPixmap pixmap = this->grab(); //
+void DrawingCanvas::segmentDetection() {
+
+    QPixmap pixmap = this->grab();
     QImage image = pixmap.toImage();
 
-    cout << "image width " << image.width() << endl;
-    cout << "image height " << image.height() << endl;
+    std::cout << "image width " << image.width() << std::endl;
+    std::cout << "image height " << image.height() << std::endl;
 
-    //To not crash we set initial size of the matrix
-    vector<CustomMatrix> windows(image.width()*image.height());
 
-    // Get the pixel value as an ARGB integer (QRgb is a typedef for unsigned int)
-    for(int i = 1; i < image.width()-1;i++){
-        for(int j = 1; j < image.height()-1;j++){
-            bool local_window[3][3] = {false};
+    std::vector<CustomMatrix> windows;
+    windows.reserve(image.width() * image.height());
+U
+    int windowRadius = 3;
+    int windowSize = windowRadius * 2 + 1; // Saat ini 7x7
 
-            for(int m=-1;m<=1;m++){
-                for(int n=-1;n<=1;n++){
-                    QRgb rgbValue = image.pixel(i+m, j+n);
-                    local_window[m+1][n+1] = (rgbValue != 0xffffffff);
+    const int MAX_DUMP_SAMPLES = 5;
+    int dumpCounter = 0;
+
+    for (int i = windowRadius; i < image.width() - windowRadius; i++) {
+        for (int j = windowRadius; j < image.height() - windowRadius; j++) {
+
+            bool local_window[7][7] = {false};
+
+            for (int m = -windowRadius; m <= windowRadius; m++) {
+                for (int n = -windowRadius; n <= windowRadius; n++) {
+                    QRgb rgbValue = image.pixel(i + m, j + n);
+                    local_window[m + windowRadius][n + windowRadius] = (rgbValue != 0xffffffff);
                 }
             }
 
             CustomMatrix mat(local_window);
 
-            windows.push_back(mat);
+            if (mat.isNonEmpty()) {
+                windows.push_back(mat);
+
+                if (dumpCounter < MAX_DUMP_SAMPLES) {
+                    std::cout << "--- Pattern (" << windowSize << "x" << windowSize
+                              << ") at Center (" << i << "," << j << ") ---" << std::endl;
+                    mat.dump();
+                    dumpCounter++;
+                }
+            }
         }
+    }
+
+    std::cout << "Total non-empty windows collected: " << windows.size() << std::endl;
+    if (windows.size() > MAX_DUMP_SAMPLES) {
     }
     return;
 }
+
 
 void DrawingCanvas::paintEvent(QPaintEvent *event){
     QPainter painter(this);

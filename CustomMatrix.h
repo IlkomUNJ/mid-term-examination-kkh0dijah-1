@@ -5,31 +5,51 @@
 
 using namespace std;
 
-class CustomMatrix{
+class CustomMatrix {
 public:
-    bool mat[3][3]={0};
-    CustomMatrix(){
+    bool mat[7][7] = {0};
 
+    CustomMatrix() {
+        for (int i = 0; i < 7; ++i)
+            for (int j = 0; j < 7; ++j)
+                mat[i][j] = false;
     }
 
-    //alternate way to instantiate the class
-    CustomMatrix(bool m[3][3]){
-        const int m_size = sizeof(m) / sizeof(m[0]);
-        for (int i=0;i< m_size;i++) {
-            for(int j=0; j < sizeof(m[0]);j++){
-                //cout << i << " " << j << endl;
+    CustomMatrix(bool m[7][7]) {
+        for (int i = 0; i < 7; ++i) {
+            for (int j = 0; j < 7; ++j) {
                 mat[i][j] = m[i][j];
             }
         }
     }
 
-    void fillMatrix(bool m[3][3]){
-        const int m_size = sizeof(m) / sizeof(m[0]);
-        for (int i=0;i< m_size;i++) {
-            for(int j=0; j < sizeof(m[0]);j++){
-                //cout << i << " " << j << endl;
+    void fillMatrix(bool m[7][7]) {
+        for (int i = 0; i < 7; ++i) {
+            for (int j = 0; j < 7; ++j) {
                 mat[i][j] = m[i][j];
             }
+        }
+    }
+
+    bool isNonEmpty() const {
+        for (int i = 0; i < 7; ++i) {
+            for (int j = 0; j < 7; ++j) {
+                if (mat[i][j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+ 
+    void dump() const {
+        for (int i = 0; i < 7; ++i) {
+            for (int j = 0; j < 7; ++j) {
+                // Mencetak '1' untuk segmen (true), '0' untuk latar belakang (false)
+                cout << (mat[i][j] ? '1' : '0') << " ";
+            }
+            cout << endl;
         }
     }
 };
